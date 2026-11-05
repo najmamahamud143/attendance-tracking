@@ -1,129 +1,66 @@
-# Attendify
+# Attendify Student App
 
-Attendify is a production-grade university attendance platform combining BLE wearable detection, mobile check-in, lecturer dashboards, random classroom re-verification, audit logging, realtime WebSockets, reporting, Redis caching, PostgreSQL storage, and anomaly detection.
+Expo React Native student app for secure university attendance check-in.
 
-## Architecture
+## Environment
 
-The system has four services:
-
-- Node.js Express API and dashboard server.
-- PostgreSQL 15 for durable relational data.
-- Redis 7 for rate limiting, cache, JWT blacklist, nonces, and active challenge state.
-- Flask anomaly microservice using IsolationForest.
-
-Data flows from ESP32 BLE anchors to `/edge/ping`, through RSSI room selection and replay/HMAC verification, then into attendance records. Staff dashboards receive realtime Socket.IO events. Student mobile apps use JWT access tokens, refresh-token cookies, Expo push notifications, and offline sync.
-
-## Docker One-Liner
+Set these values before building:
 
 ```bash
-cp .env.example .env
-docker compose up --build
+EXPO_PUBLIC_API_BASE_URL=http://192.168.0.114:3000
+EXPO_PUBLIC_SSL_CERT_NAMES=attendify_backend
+EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn
 ```
 
-Run migrations:
+The development fallback server is `http://192.168.0.114:3000`. Certificate pinning only applies to HTTPS builds.
+
+## Certificate Pinning
+
+Pinned certificates are loaded by `react-native-ssl-pinning` from the native bundle using the names in `EXPO_PUBLIC_SSL_CERT_NAMES`.
+
+When the backend certificate renews:
+
+1. Export the server certificate in DER format.
+2. Add it to `ios/<app>/` and `android/app/src/main/assets/` using the same base name, for example `attendify_backend.cer`.
+3. If you changed the base name, update `EXPO_PUBLIC_SSL_CERT_NAMES`.
+4. Rebuild the native app with `expo run:ios` or `expo run:android`.
+5. Confirm a request succeeds against the real server and fails against a proxy with a different certificate.
+
+Pinning protects attendance credentials and device identifiers from MITM attacks, hostile Wi-Fi interception, and debugging proxy capture.
+
+## Security Notes
+
+- Device fingerprint headers are sent as `X-Device-Fingerprint`.
+- Root or jailbreak detection blocks the app and logs a `jailbreak_detected` security event.
+- The challenge screen enables screenshot prevention to reduce classroom-code sharing.
+- Offline queue payloads are encrypted with a key derived from the access token and device fingerprint.
+- Sentry tags include student year, app version, and platform only. Registration numbers and other PII are not sent.
+
+## Accessibility Verification
+
+Interactive controls include `accessibilityLabel` and `accessibilityRole`. OTP fields include digit-specific labels and hints. Decorative icons are hidden from screen readers. The color palette was selected to meet WCAG AA contrast for primary text and controls on the configured backgrounds.
+
+Manual results to record for release:
+
+- iOS VoiceOver: login, check-in, challenge OTP, tabs, and logout reachable.
+- Android TalkBack: login, check-in, challenge OTP, tabs, and logout reachable.
+
+## Lottie Assets
+
+The app expects these open-source Lottie JSON animations in `assets/lottie/`:
+
+- Success green checkmark: https://lottiefiles.com/search?q=success%20check
+- Failure red X pulse: https://lottiefiles.com/search?q=error%20x
+- Loading spinning dots: https://lottiefiles.com/search?q=loading%20dots
+- Warning amber bell shake: https://lottiefiles.com/search?q=warning%20bell
+
+Placeholder JSON files are committed so the app can boot before final animation files are dropped in.
+
+## E2E Tests
 
 ```bash
-docker compose run --rm app node db/migrate.js
+npm run test:e2e -- --configuration ios.sim.debug
+npm run test:e2e -- --configuration android.emu.debug
 ```
 
-## Environment Variables
-
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` | Access token signing secret |
-| `JWT_REFRESH_SECRET` | Refresh token signing secret |
-| `REDIS_URL` | Redis connection string |
-| `ESP32_API_KEY` | Hardware API key |
-| `ESP32_HMAC_SECRET` | HMAC signing secret for edge payloads |
-| `ANOMALY_SERVICE_URL` | Flask anomaly service URL |
-| `PUBLIC_HOST` | LAN IP advertised in logs |
-
-## API Summary
-
-- `POST /api/auth/login` staff login
-- `POST /api/mobile/login` student login
-- `POST /auth/refresh` rotate refresh token
-- `POST /auth/logout` revoke refresh token and blacklist access token
-- `POST /edge/ping` ESP32 BLE ping, legacy or multi-anchor
-- `POST /auth/checkin` student check-in
-- `GET /auth/challenge-status` active re-verification status
-- `POST /auth/reverify` submit classroom code
-- `GET /api/attendance-live` staff realtime feed snapshot
-- `GET /api/reports/session/:id/csv` CSV export
-- `GET /api/reports/course/:id/pdf` PDF export
-- `GET /api/reports/student/:id` student history
-- `GET /health` dependency health check
-- `GET /api-docs` Swagger UI
-
-## ESP32 Hardware Setup
-
-Each ESP32 anchor scans BLE tags and sends either legacy:
-
-```json
-{ "tag_id": "TAG_01", "room_id": "ESP_NODE_01", "rssi": -42, "nonce": "uuid", "timestamp": 1700000000 }
-```
-
-or multi-anchor:
-
-```json
-{
-  "tag_id": "TAG_01",
-  "nonce": "uuid",
-  "timestamp": 1700000000,
-  "readings": [
-    { "room_id": "ESP_NODE_01", "rssi": -42 },
-    { "room_id": "ESP_NODE_02", "rssi": -78 }
-  ]
-}
-```
-
-Include headers:
-
-- `x-api-key: <ESP32_API_KEY>`
-- `x-signature: <HMAC_SHA256(raw_payload, ESP32_HMAC_SECRET)>`
-
-## Development Commands
-
-```bash
-make dev
-make migrate
-make test
-make logs
-```
-
-Default dashboard login after migrations:
-
-- Staff ID: `admin`
-- Password: `admin123`
-
-## Load Testing
-
-Attendify includes Artillery scenarios in `load-tests/` for signed ESP32 edge pings, authenticated student check-ins, multi-anchor BLE readings, and challenge-status reads.
-
-Seed the load-test data:
-
-```bash
-npm run load:seed
-```
-
-Run the main load test and generate a report:
-
-```bash
-npm run load:test
-npm run load:report
-```
-
-Run the stress test:
-
-```bash
-npm run load:stress
-```
-
-Optional Docker metrics logging while a test is running:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File load-tests/record-docker-metrics.ps1 -Seconds 300
-```
-
-Reports are written to `load-tests/load-test-report.html`. See `load-tests/README.md` for the full workflow.
+Detox suites cover login, login failure, check-in success, check-in rejection, challenge re-verification, and offline queue sync.
