@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics | Attendify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand-lockup" href="live.html">
+        <span class="brand-mark"><i class="fa-solid fa-fingerprint" aria-hidden="true"></i></span>
+        <span class="brand-copy"><h1>Attendify</h1><p>University attendance system</p></span>
+      </a>
+      <div class="user-area">
+        <span class="lecturer-pill"><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span data-lecturer-name></span></span>
+        <button class="btn btn-secondary" type="button" data-logout><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Logout</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Dashboard navigation">
+        <a class="nav-link" data-nav="live" href="live.html"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i><span>Live Monitor</span></a>
+        <a class="nav-link" data-nav="schedules" href="schedules.html"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>Schedules</span></a>
+        <a class="nav-link" data-nav="students" href="students.html"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Students</span></a>
+        <a class="nav-link" data-nav="analytics" href="analytics.html"><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Analytics</span></a>
+      </nav>
+
+      <main class="content">
+        <div class="page-header">
+          <div class="page-title"><h1>Analytics</h1><p>Weekly attendance percentages from current attendance statistics.</p></div>
+          <button class="btn btn-secondary" type="button" id="reloadStats"><i class="fa-solid fa-rotate" aria-hidden="true"></i>Reload</button>
+        </div>
+        <div id="analyticsMessage" class="message" role="status"></div>
+
+        <section class="card" aria-labelledby="analyticsTitle">
+          <div class="card-header"><h2 id="analyticsTitle"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Weekly attendance percentage</h2></div>
+          <div class="chart-shell">
+            <div id="chartEmpty" class="empty-state">
+              <div>
+                <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
+                <div>Loading attendance analytics...</div>
+              </div>
+            </div>
+            <div class="chart-frame" id="chartFrame">
+              <canvas id="attendanceChart" aria-label="Weekly attendance bar chart" role="img"></canvas>
+            </div>
+            <div id="fallbackChart" class="fallback-bars" aria-label="Weekly attendance percentage list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="common.js"></script>
+  <script src="analytics.js"></script>
+</body>
+</html>

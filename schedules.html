@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedules | Attendify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand-lockup" href="live.html">
+        <span class="brand-mark"><i class="fa-solid fa-fingerprint" aria-hidden="true"></i></span>
+        <span class="brand-copy"><h1>Attendify</h1><p>University attendance system</p></span>
+      </a>
+      <div class="user-area">
+        <span class="lecturer-pill"><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span data-lecturer-name></span></span>
+        <button class="btn btn-secondary" type="button" data-logout><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Logout</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Dashboard navigation">
+        <a class="nav-link" data-nav="live" href="live.html"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i><span>Live Monitor</span></a>
+        <a class="nav-link" data-nav="schedules" href="schedules.html"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>Schedules</span></a>
+        <a class="nav-link" data-nav="students" href="students.html"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Students</span></a>
+        <a class="nav-link" data-nav="analytics" href="analytics.html"><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Analytics</span></a>
+      </nav>
+
+      <main class="content">
+        <div class="page-header">
+          <div class="page-title"><h1>Schedules</h1><p>Create and manage lecture sessions by room, day, and year.</p></div>
+          <button class="btn btn-primary" type="button" id="addSchedule"><i class="fa-solid fa-plus" aria-hidden="true"></i>Add Schedule</button>
+        </div>
+        <div id="scheduleMessage" class="message" role="status"></div>
+
+        <section class="card" aria-labelledby="scheduleTableTitle">
+          <div class="card-header"><h2 id="scheduleTableTitle"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i> Current schedules</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Course</th><th>Room</th><th>Day</th><th>Start</th><th>End</th><th>Year</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="scheduleRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="scheduleModal" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle">
+    <form class="modal" id="scheduleForm">
+      <div class="modal-header">
+        <h2 id="scheduleModalTitle">Add Schedule</h2>
+        <button class="btn-icon" type="button" data-close-modal aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body form-grid">
+        <input type="hidden" id="scheduleId">
+        <div class="field"><label for="courseCode">Course Code</label><input class="input" id="courseCode" required></div>
+        <div class="field"><label for="roomId">Room ID</label><input class="input" id="roomId" required></div>
+        <div class="field">
+          <label for="dayOfWeek">Day</label>
+          <select class="select" id="dayOfWeek" required>
+            <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+          </select>
+        </div>
+        <div class="field"><label for="startTime">Start Time</label><input class="input" id="startTime" type="time" required></div>
+        <div class="field"><label for="endTime">End Time</label><input class="input" id="endTime" type="time" required></div>
+        <div class="field"><label for="scheduleYear">Year</label><select class="select" id="scheduleYear" required><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-close-modal>Cancel</button>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="common.js"></script>
+  <script src="schedules.js"></script>
+</body>
+</html>

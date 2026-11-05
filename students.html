@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students | Attendify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand-lockup" href="live.html">
+        <span class="brand-mark"><i class="fa-solid fa-fingerprint" aria-hidden="true"></i></span>
+        <span class="brand-copy"><h1>Attendify</h1><p>University attendance system</p></span>
+      </a>
+      <div class="user-area">
+        <span class="lecturer-pill"><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span data-lecturer-name></span></span>
+        <button class="btn btn-secondary" type="button" data-logout><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Logout</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Dashboard navigation">
+        <a class="nav-link" data-nav="live" href="live.html"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i><span>Live Monitor</span></a>
+        <a class="nav-link" data-nav="schedules" href="schedules.html"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>Schedules</span></a>
+        <a class="nav-link" data-nav="students" href="students.html"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Students</span></a>
+        <a class="nav-link" data-nav="analytics" href="analytics.html"><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Analytics</span></a>
+      </nav>
+
+      <main class="content">
+        <div class="page-header">
+          <div class="page-title"><h1>Students</h1><p>Maintain student records and wearable tag assignments.</p></div>
+          <button class="btn btn-primary" type="button" id="addStudent"><i class="fa-solid fa-plus" aria-hidden="true"></i>Add Student</button>
+        </div>
+        <div id="studentMessage" class="message" role="status"></div>
+
+        <section class="card" aria-labelledby="studentTableTitle">
+          <div class="card-header"><h2 id="studentTableTitle"><i class="fa-solid fa-address-book" aria-hidden="true"></i> Student registry</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Reg No</th><th>Name</th><th>Tag ID</th><th>Year</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="studentRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="studentModal" role="dialog" aria-modal="true" aria-labelledby="studentModalTitle">
+    <form class="modal" id="studentForm">
+      <div class="modal-header">
+        <h2 id="studentModalTitle">Add Student</h2>
+        <button class="btn-icon" type="button" data-close-modal aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="field"><label for="regNumber">Reg No</label><input class="input" id="regNumber" required></div>
+        <div class="field"><label for="studentName">Name</label><input class="input" id="studentName" required></div>
+        <div class="field"><label for="tagId">Tag ID</label><input class="input" id="tagId" required></div>
+        <div class="field"><label for="studentYear">Year</label><select class="select" id="studentYear" required><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-close-modal>Cancel</button>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="common.js"></script>
+  <script src="students.js"></script>
+</body>
+</html>

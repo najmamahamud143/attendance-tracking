@@ -1,0 +1,76 @@
+﻿services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://attendify:attendify_password@db:5432/attendify
+      REDIS_URL: redis://redis:6379
+      ANOMALY_SERVICE_URL: http://anomaly:5001
+      APP_TIME_ZONE: Asia/Riyadh
+      TZ: Asia/Riyadh
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./migrations:/app/migrations
+      - ./scripts:/app/scripts
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      anomaly:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: sh -c "node db/migrate.js && node server.js"
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: attendify
+      POSTGRES_PASSWORD: attendify_password
+      POSTGRES_DB: attendify
+      TZ: Asia/Riyadh
+      PGTZ: Asia/Riyadh
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U attendify -d attendify"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  anomaly:
+    build:
+      context: ./anomaly_service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  pgdata:
+

@@ -1,0 +1,35 @@
+{
+  "info": {
+    "name": "Attendify API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Staff Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/auth/login",
+        "body": { "mode": "raw", "raw": "{ \"staff_id\": \"admin\", \"password\": \"admin123\" }" }
+      }
+    },
+    {
+      "name": "Mobile Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/mobile/login",
+        "body": { "mode": "raw", "raw": "{ \"reg_number\": \"P15/145354/2022\", \"year\": 4 }" }
+      }
+    },
+    {
+      "name": "Live Attendance",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{base_url}}/api/attendance-live"
+      }
+    }
+  ],
+  "variable": [{ "key": "base_url", "value": "http://localhost:3000" }]
+}

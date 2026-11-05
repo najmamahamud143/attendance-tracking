@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+attendance.db
+*.db
+.env
+.git
+coverage
+__pycache__
+anomaly_service/model.joblib
